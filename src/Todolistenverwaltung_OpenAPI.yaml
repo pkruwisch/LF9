@@ -1,0 +1,213 @@
+openapi: 3.0.1
+info:
+  title: Todo-Listen-Verwaltung
+  description: "Server zum anlegen und verwalten einer Listenstruktur"
+  contact:
+    email: "paul@ruwisch.fictional"
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.1.0
+servers:
+- url: http://127.0.0.1:5000/
+tags:
+- name: Listenverwaltung
+paths:
+  /todo-list/{list_id}:
+    get:
+      tags:
+      - Listenverwaltung
+      summary: Get all items from list
+      operationId: getList
+      parameters:
+      - name: list_id
+        in: path
+        description: list id
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: List item returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TodoList'
+        404:
+          description: Invalid list id
+          content: {}
+        500:
+          description: Server error
+          content: {}
+    delete:
+      tags:
+      - Listenverwaltung
+      summary: Delete a list
+      operationId: deleteList
+      parameters:
+      - name: list_id
+        in: path
+        description: list id
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: List was deleted
+          content: {}
+        404:
+          description: Invalid list id
+          content: {}
+        500:
+          description: Server error
+          content: {}
+  /todo-list:
+    post:
+      tags:
+      - Listenverwaltung
+      summary: Add new list
+      operationId: addList
+      requestBody:
+        description: list object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoList'
+        required: true
+      responses:
+        201:
+          description: List added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoList'
+        406:
+          description: JSON Invalid
+          content: {}
+        500:
+          description: Server error
+          content: {}
+      x-codegen-request-body-name: body 
+  /todo-list/{list_id}/entry:
+    post:
+      tags:
+      - Listenverwaltung
+      summary: Add a new entry to existing list
+      operationId: addEntryToList
+      requestBody:
+        description: entry object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoEntry'
+        required: true
+      responses:
+        201:
+          description: Entry added to List
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoEntry'
+        406:
+          description: JSON invalid
+          content: {}
+        500:
+          description: Server error
+          content: {}
+      x-codegen-request-body-name: body
+  /todo-list/{list_id}/entry/{entry_id}:
+    patch:
+      tags:
+      - Listenverwaltung
+      summary: Refresh existing list entry
+      operationId: patchEntry
+      parameters:
+      - name: list_id
+        in: path
+        description: list id
+        required: true
+        schema:
+          type: string
+      - name: entry_id
+        in: path
+        description: entry id
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Entry changed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TodoEntry'
+        404:
+          description: Invalid list id
+          content: {}
+        405:
+          description: Invalid entry id
+          content: {}
+        406:
+          description: JSON invalid
+          content: {}
+        500:
+          description: Server error
+          content: {}
+    delete:
+      tags:
+      - Listenverwaltung
+      summary: Delete a single entry in an existing list
+      operationId: deleteEntry
+      parameters:
+      - name: list_id
+        in: path
+        description: list id
+        required: true
+        schema:
+          type: string
+      - name: entry_id
+        in: path
+        description: entry id
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: List was deleted
+          content: {}
+        404:
+          description: Invalid list id
+          content: {}
+        500:
+          description: Server error
+          content: {}
+components:
+  schemas:
+    TodoList:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+    TodoEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        user_id:
+          type: string
+          format: uuid
+        list_id:
+          type: string
+          format: uuid
